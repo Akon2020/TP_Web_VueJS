@@ -1,13 +1,11 @@
-<!-- Avec Vue v2 -->
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VueJS - v2</title>
     <script src="vue.min.js"></script>
     <link rel="stylesheet" href="bootstrap.min.css" />
+    <title>VueJS - v2 | With range func</title>
 
     <style>
       .boule {
@@ -20,7 +18,7 @@
         justify-content: center;
         align-items: center;
         margin: 15px;
-        transition: anim 0.8s;
+        transition: background-color 0.8s;
       }
 
       .boule-blue {
@@ -52,7 +50,6 @@
           <button
             v-if="stoped"
             @click="startBoule"
-            :disabled="boules.length === 0 || !stoped"
             type="button"
             class="btn btn-success p-3"
           >
@@ -70,8 +67,8 @@
             +
           </button>
           <button
+            v-if="!erreur"
             @click="deleteBoule"
-            :disabled="boules.length === 0"
             type="button"
             class="btn btn-warning p-3"
           >
@@ -80,7 +77,7 @@
         </div>
         <input
           v-model="temps"
-          min="0.1"
+          min="1"
           max="10"
           step="0.1"
           type="range"
@@ -94,11 +91,10 @@
         <span
           v-for="val in boules"
           :key="val"
+          :style="{transition: `background-color ${temps}s`}"
           class="boule border"
-          :style="{ transition: `anim ${temps}s` }"
+          >{{val}}</span
         >
-          {{val}}
-        </span>
       </section>
       <div v-if="erreur" class="alert alert-danger m-2">{{erreur}}</div>
     </div>
@@ -109,6 +105,7 @@
   var app = new Vue({
     el: "#app",
     data: {
+      click: "Titre des boules",
       temps: 0.8,
       boules: [1, 2, 3],
       stoped: true,
@@ -146,7 +143,6 @@
         this.stoped = true;
         clearInterval(this.intervalle);
       },
-
       animateBoules() {
         this.intervalle = setInterval(() => {
           document.querySelectorAll(".boule").forEach((el) => {

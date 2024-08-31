@@ -1,113 +1,161 @@
+<!-- Avec Vue v2 -->
+
 <!DOCTYPE html>
-<html lang='en'>
-    <head>
-        <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>VueJS</title>
-        <script src="vue.min.js"></script>
-        <link rel="stylesheet" href="bootstrap.min.css">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="vue.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <title>VueJS - v2</title>
 
-        <style>
-            .boule {
-                min-height: 100px;
-                min-width: 100px;
-                border-radius: 50%;
-                background-color:  #208ae0;
-                color: #fff;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                margin: 15px;
-                transition: background-color 0.8s;
-            }
+    <style>
+      .boule {
+        min-height: 100px;
+        min-width: 100px;
+        border-radius: 50%;
+        background-color: #208ae0;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 15px;
+        transition: anim 0.8s;
+      }
 
-            .boule-blue {
-                background-color:  #208ae0;
-            }
+      .boule-blue {
+        background-color: #208ae0;
+      }
 
-            .boule-red {
-                background-color:  #ec6161;
-            }
+      .boule-red {
+        background-color: #ec6161;
+      }
 
-            .boule-green {
-                background-color:  #4fce4f;
-            }
+      .boule-green {
+        background-color: #4fce4f;
+      }
 
-            .boule-purple {
-                background-color: #a11da1;
-            }
-        </style>
-    </head>
+      .boule-purple {
+        background-color: #a11da1;
+      }
+    </style>
+  </head>
 
-    <body>
-        <div id="app" class="container-fluid mt-4">
-            <header class="d-flex align-items-center bg-info pe-2 gap-5">
-                <div class="btn-group m-2 gap-1" role="group" aria-label="Basic example">
-                    <button v-if="stoped" @click="startBoule" type="button" class="btn btn-success p-3">Start</button>
-                    <button v-else @click="stopBoule" type="button" class="btn btn-danger p-3">Stop</button>
-                    <button @click="addBoule" type="button" class="btn btn-primary p-3">+</button>
-                    <button v-if="!erreur" @click="deleteBoule" type="button" class="btn btn-warning p-3">-</button>
-                </div>
-                <input v-model="temps" min="1" max="10" step="0.1" type="range" class="form-range">
-            </header>
-
-            <section class="d-flex justify-content-evenly align-items-center bg-dark p-2 flex-wrap">
-                <span v-for="val in boules" :key="val" :style="{transition: `background-color ${temps}s`}" class="boule border">{{val}}</span>
-            </section>
-            <div v-if="erreur" class="alert alert-danger m-2">{{erreur}}</div>
+  <body>
+    <div id="app" class="container-fluid mt-4">
+      <header class="d-flex align-items-center bg-info pe-2 gap-5">
+        <div
+          class="btn-group m-2 gap-1"
+          role="group"
+          aria-label="Basic example"
+        >
+          <button
+            v-if="stoped"
+            @click="startBoule"
+            :disabled="boules.length === 0 || !stoped"
+            type="button"
+            class="btn btn-success p-3"
+          >
+            Start
+          </button>
+          <button
+            v-else
+            @click="stopBoule"
+            type="button"
+            class="btn btn-danger p-3"
+          >
+            Stop
+          </button>
+          <button @click="addBoule" type="button" class="btn btn-primary p-3">
+            +
+          </button>
+          <button
+            @click="deleteBoule"
+            :disabled="boules.length === 0"
+            type="button"
+            class="btn btn-warning p-3"
+          >
+            -
+          </button>
         </div>
-    </body>
+        <input
+          v-model="temps"
+          min="0.1"
+          max="10"
+          step="0.1"
+          type="range"
+          class="form-range"
+        />
+      </header>
 
+      <section
+        class="d-flex justify-content-evenly align-items-center bg-dark p-2 flex-wrap"
+      >
+        <span
+          v-for="val in boules"
+          :key="val"
+          class="boule border"
+          :style="{ transition: `anim ${temps}s` }"
+        >
+          {{val}}
+        </span>
+      </section>
+      <div v-if="erreur" class="alert alert-danger m-2">{{erreur}}</div>
+    </div>
+  </body>
 </html>
 
 <script>
-    var app = new Vue({
-        el: "#app",
-        data: {
-            click: "Titre des boules",
-            temps : 0.8,
-            boules: [1,2,3],
-            stoped: true,
-            erreur: "",
-            couleurs: ['boule-blue', 'boule-red', 'boule-green', 'boule-purple'],
-            intervalle: null
-        },
+  var app = new Vue({
+    el: "#app",
+    data: {
+      temps: 0.8,
+      boules: [1, 2, 3],
+      stoped: true,
+      erreur: "",
+      couleurs: ["boule-blue", "boule-red", "boule-green", "boule-purple"],
+      intervalle: null,
+    },
 
-        methods : {
-            addBoule(){
-                console.log('ADD');
-                const t = this.boules.length;
-                this.boules.push(t+1);
-                this.erreur = "";
-            },
+    methods: {
+      addBoule() {
+        console.log("ADD");
+        const t = this.boules.length;
+        this.boules.push(t + 1);
+        this.erreur = "";
+      },
 
-            deleteBoule(){
-                console.log('DELETE');
-                this.boules.pop();
-                this.erreur = "";
-                const t = this.boules.length;
-                if (t==0) this.erreur = "Vous ne pouvez plus en supprimer puisqu'il n'y en a plus!";
-            },
+      deleteBoule() {
+        console.log("DELETE");
+        this.boules.pop();
+        this.erreur = "";
+        const t = this.boules.length;
+        if (t == 0)
+          this.erreur =
+            "Vous ne pouvez plus en supprimer puisqu'il n'y en a plus!";
+      },
 
-            startBoule(){
-                console.log('START');
-                this.stoped = false;
-                this.animateBoules();
-            },
+      startBoule() {
+        console.log("START");
+        this.stoped = false;
+        this.animateBoules();
+      },
 
-            stopBoule(){
-                console.log('STOP');
-                this.stoped = true;
-                clearInterval(this.intervalle);
-            },
-            animateBoules(){
-                this.intervalle = setInterval(() => {
-                    document.querySelectorAll('.boule').forEach((el) => {
-                        const aleaCouleur = this.couleurs[Math.floor(Math.random() * this.couleurs.length)];
-                        el.className = `boule border ${aleaCouleur}`;
-                    });
-                }, this.temps * 1000);
-            }
-        },
-    });
+      stopBoule() {
+        console.log("STOP");
+        this.stoped = true;
+        clearInterval(this.intervalle);
+      },
+
+      animateBoules() {
+        this.intervalle = setInterval(() => {
+          document.querySelectorAll(".boule").forEach((el) => {
+            const aleaCouleur =
+              this.couleurs[Math.floor(Math.random() * this.couleurs.length)];
+            el.className = `boule border ${aleaCouleur}`;
+          });
+        }, this.temps * 1000);
+      },
+    },
+  });
 </script>
