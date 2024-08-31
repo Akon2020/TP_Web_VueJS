@@ -18,6 +18,7 @@
                 justify-content: center;
                 align-items: center;
                 margin: 15px;
+                transition: background-color 0.8s;
             }
 
             .boule-blue {
@@ -51,7 +52,7 @@
             </header>
 
             <section class="d-flex justify-content-evenly align-items-center bg-dark p-2 flex-wrap">
-                <span v-for="val in boules" class="boule border">{{val}}</span>
+                <span v-for="val in boules" :key="val" :style="{transition: `background-color ${temps}s`}" class="boule border">{{val}}</span>
             </section>
             <div v-if="erreur" class="alert alert-danger m-2">{{erreur}}</div>
         </div>
@@ -64,23 +65,19 @@
         el: "#app",
         data: {
             click: "Titre des boules",
-            temps : 2,
+            temps : 0.8,
             boules: [1,2,3],
             stoped: true,
-            erreur: ""
-        },
-
-        computed : {
-            fullname(){
-                return this.name + " " + this.lastname + " " + this.firstname
-            },
+            erreur: "",
+            couleurs: ['boule-blue', 'boule-red', 'boule-green', 'boule-purple'],
+            intervalle: null
         },
 
         methods : {
             addBoule(){
                 console.log('ADD');
-                const taille = this.boules.length;
-                this.boules.push(taille+1);
+                const t = this.boules.length;
+                this.boules.push(t+1);
                 this.erreur = "";
             },
 
@@ -88,20 +85,29 @@
                 console.log('DELETE');
                 this.boules.pop();
                 this.erreur = "";
-                const taille = this.boules.length;
-                if (taille==0) this.erreur = "Vous ne pouvez plus en supprimer puisqu'il n'y en a plus!";
+                const t = this.boules.length;
+                if (t==0) this.erreur = "Vous ne pouvez plus en supprimer puisqu'il n'y en a plus!";
             },
 
             startBoule(){
                 console.log('START');
                 this.stoped = false;
+                this.animateBoules();
             },
 
             stopBoule(){
                 console.log('STOP');
                 this.stoped = true;
+                clearInterval(this.intervalle);
             },
-
+            animateBoules(){
+                this.intervalle = setInterval(() => {
+                    document.querySelectorAll('.boule').forEach((el) => {
+                        const aleaCouleur = this.couleurs[Math.floor(Math.random() * this.couleurs.length)];
+                        el.className = `boule border ${aleaCouleur}`;
+                    });
+                }, this.temps * 1000);
+            }
         },
     });
 </script>
