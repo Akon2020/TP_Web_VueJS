@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VueJS</title>
+    <script src="vue.global.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
+
+    <style>
+        .boule {
+            min-height: 100px;
+            min-width: 100px;
+            border-radius: 50%;
+            background-color:  #208ae0;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px;
+            transition: background-color 0.8s;
+        }
+
+        .boule-blue {
+            background-color:  #208ae0;
+        }
+
+        .boule-red {
+            background-color:  #ec6161;
+        }
+
+        .boule-green {
+            background-color:  #4fce4f;
+        }
+
+        .boule-purple {
+            background-color: #a11da1;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app" class="container-fluid mt-4">
+    <header class="d-flex align-items-center bg-info pe-2 gap-5">
+        <div class="btn-group m-2 gap-1" role="group" aria-label="Basic example">
+            <button @click="startBoule" :disabled="boules.length === 0 || !stoped" type="button" class="btn btn-success p-3">Start</button>
+            <button @click="stopBoule" :disabled="stoped" type="button" class="btn btn-danger p-3">Stop</button>
+            <button @click="addBoule" type="button" class="btn btn-primary p-3">+</button>
+            <button @click="deleteBoule" :disabled="boules.length === 0" type="button" class="btn btn-warning p-3">-</button>
+        </div>
+        <input v-model="temps" min="0.1" max="2" step="0.1" type="range" class="form-range">
+    </header>
+
+    <section class="d-flex justify-content-evenly align-items-center bg-dark p-2 flex-wrap">
+        <span v-for="val in boules" :key="val" :style="{transition: `background-color ${2 - temps}s`}" class="boule border">{{val}}</span>
+    </section>
+    <div v-if="erreur" class="alert alert-danger m-2">{{erreur}}</div>
+</div>
+
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                temps: 0.8,
+                boules: [1, 2, 3],
+                stoped: true,
+                erreur: "",
+                couleurs: ['boule-blue', 'boule-red', 'boule-green', 'boule-purple'],
+                intervalle: null
+            };
+        },
+        methods: {
+            addBoule() {
+                this.boules.push(this.boules.length + 1);
+                this.erreur = "";
+            },
+            deleteBoule() {
+                this.boules.pop();
+                if (this.boules.length === 0) {
+                    this.erreur = "Vous ne pouvez plus en supprimer puisqu'il n'y en a plus!";
+                } else {
+                    this.erreur = "";
+                }
+            },
+            startBoule() {
+                this.stoped = false;
+                this.animateBoules();
+            },
+            stopBoule() {
+                this.stoped = true;
+                clearInterval(this.intervalle);
+            },
+            animateBoules() {
+                clearInterval(this.intervalle);
+                this.intervalle = setInterval(() => {
+                    document.querySelectorAll('.boule').forEach((el) => {
+                        const aleaCouleur = this.couleurs[Math.floor(Math.random() * this.couleurs.length)];
+                        el.className = `boule border ${aleaCouleur}`;
+                    });
+                }, (2 - this.temps) * 1000);
+            }
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
