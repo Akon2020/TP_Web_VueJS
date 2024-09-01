@@ -1,5 +1,3 @@
-<!-- Avec Vue v2 -->
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -95,67 +93,83 @@
           v-for="val in boules"
           :key="val"
           class="boule border"
-          :style="{ transition: `anim ${temps}s` }"
+          :style="bouleStyle"
         >
           {{val}}
         </span>
       </section>
       <div v-if="erreur" class="alert alert-danger m-2">{{erreur}}</div>
     </div>
+
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          temps: 0.5,
+          boules: [1, 2, 3],
+          stoped: true,
+          erreur: "",
+          couleurs: ["boule-blue", "boule-red", "boule-green", "boule-purple"],
+          intervalle: null,
+        },
+        computed: {
+          bouleStyle() {
+            return {
+              transition: `all ${this.temps}s`,
+            };
+          },
+        },
+        watch: {
+          temps(newVal) {
+            if (!this.stoped) {
+              clearInterval(this.intervalle);
+              this.animateBoules();
+            }
+          },
+        },
+        methods: {
+          addBoule() {
+            console.log("ADD");
+            const t = this.boules.length;
+            this.boules.push(t + 1);
+            this.erreur = "";
+          },
+
+          deleteBoule() {
+            console.log("DELETE");
+            this.boules.pop();
+            this.erreur = "";
+            const t = this.boules.length;
+            if (t == 0)
+              this.erreur =
+                "Vous ne pouvez plus en supprimer puisqu'il n'y en a plus!";
+          },
+
+          startBoule() {
+            console.log("START");
+            this.stoped = false;
+            this.animateBoules();
+          },
+
+          stopBoule() {
+            console.log("STOP");
+            this.stoped = true;
+            clearInterval(this.intervalle);
+          },
+
+          animateBoules() {
+            this.intervalle = setInterval(() => {
+              document.querySelectorAll(".boule").forEach((el) => {
+                const aleaCouleur =
+                  this.couleurs[
+                    Math.floor(Math.random() * this.couleurs.length)
+                  ];
+                el.className = `boule border ${aleaCouleur}`;
+              });
+            }, this.temps * 500);
+          },
+        },
+      });
+    </script>
   </body>
 </html>
-
-<script>
-  var app = new Vue({
-    el: "#app",
-    data: {
-      temps: 0.5,
-      boules: [1, 2, 3],
-      stoped: true,
-      erreur: "",
-      couleurs: ["boule-blue", "boule-red", "boule-green", "boule-purple"],
-      intervalle: null,
-    },
-
-    methods: {
-      addBoule() {
-        console.log("ADD");
-        const t = this.boules.length;
-        this.boules.push(t + 1);
-        this.erreur = "";
-      },
-
-      deleteBoule() {
-        console.log("DELETE");
-        this.boules.pop();
-        this.erreur = "";
-        const t = this.boules.length;
-        if (t == 0)
-          this.erreur =
-            "Vous ne pouvez plus en supprimer puisqu'il n'y en a plus!";
-      },
-
-      startBoule() {
-        console.log("START");
-        this.stoped = false;
-        this.animateBoules();
-      },
-
-      stopBoule() {
-        console.log("STOP");
-        this.stoped = true;
-        clearInterval(this.intervalle);
-      },
-
-      animateBoules() {
-        this.intervalle = setInterval(() => {
-          document.querySelectorAll(".boule").forEach((el) => {
-            const aleaCouleur =
-              this.couleurs[Math.floor(Math.random() * this.couleurs.length)];
-            el.className = `boule border ${aleaCouleur}`;
-          });
-        }, this.temps * 1000);
-      },
-    },
-  });
-</script>
